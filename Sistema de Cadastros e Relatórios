@@ -1,0 +1,2205 @@
+// Telas do PIM - 2º Semestre
+
+// Bibliotecas
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
+
+// Struct Tela de Login
+typedef struct
+{
+    char login[30];
+    char senha[30];
+} pessoa;
+pessoa p[1];
+
+// Struct Tela de Login de Relatórios
+typedef struct
+{
+    char loginRel[30];
+    char senhaRel[30];
+} pessoa2;
+pessoa2 p2[1];
+
+// Struct Cadastro de Funcionarios
+typedef struct
+{
+    char nome[50];
+    char endereco[50];
+    char cpf[20];
+    char telefone[15];
+    char codFunc[20];
+    float salario;
+    char departam[20];
+    char cargo[20];
+} cadastro;
+
+// Struct Cadastro de Fornecedores
+typedef struct
+{
+    char nome[50];
+    char endereco[50];
+    char cnpj[20];
+    char produto[50];
+    char codigoP[20];
+    int data;
+    int qtd;
+} cadastroFor;
+
+// Struct Cadastro de Clientes
+typedef struct
+{
+    char nome[50];
+    char endereco[50];
+    char cpf[20];
+    char telefone[15];
+} cadastroClie;
+
+// Struct de Vendas
+typedef struct
+{
+    char produto[50];
+    char codigoP[20];
+    float valorPrd;
+    char cpfc[20];
+    char meioPag[20];
+} vendas;
+
+// Struct Complementar de Venda
+typedef struct
+{
+    char cpfc[20];
+    char meioPag[20];
+} vendas2;
+
+// Variáveis Globais
+cadastro Cad[300];
+cadastroFor CadForn[300];
+cadastroClie CadClien[300];
+vendas Vendas[600];
+vendas Vendas2[600];
+int numCad = 0;
+int numCadFr = 0;
+int numCadCl = 0;
+int numVend = 0;
+int numVend2 = 0;
+int op;
+
+// Struct Para Colocar a Data
+typedef struct
+{
+    int dia, mes, ano;
+} data;
+
+// Função Principal
+int main(void)
+{
+    // Troca de Cor do Console:
+    // 0==> Plano de Fundo na Cor Preta
+    // C==> Cor da Fonte na Cor Vermelha
+    system("color 0C");
+    menu();
+}
+// Menu Para Separar Cliente / Funcionários
+void menu()
+{
+    system("cls");
+    printf("-------------------------------------------\n");
+    printf("\t\tMENU\n");
+    printf("-------------------------------------------\n");
+    printf("\n1 - Cliente\n2 - Funcionario\n\nEscolha a Opcao Desejada: ");
+    scanf("%d", &op);
+    switch (op)
+    {
+    case 1:
+        passarCompras(); // Função Para Passar as Compras no Caixa
+        break;
+    case 2:
+        do
+        {
+            telaLogin();   // Tela de Login Padrão
+            menuInicial(); // Menu Inicial (Visível Somente a Funcionários Que Fizeram Login)
+        } while (op != 0); // Se Teclar 0, Fecha a Tela
+        break;
+    default:
+        printf("Opcao Invalida!\nTente Novamente: "); // Mensagem de Erro Se Teclar Uma Opção Inválida
+        scanf("%d", &op);
+        if (op == 1)
+        {
+            passarCompras();
+        }
+        if (op == 2)
+        {
+            do
+            {
+                telaLogin();
+                menuInicial();
+            } while (op != 0); // Se Teclar 0, Fecha a Tela
+        }
+        break;
+    }
+}
+
+// Tela de Login Padrão
+void telaLogin()
+{
+    system("cls");
+    char login[30];
+    char senha[30];
+
+    strcpy(p[0].login, "hipermtech");
+    strcpy(p[0].senha, "123456");
+    printf("------------------------------------------------\n");
+    printf("\t\tTELA DE LOGIN\n");
+    printf("------------------------------------------------\n");
+    printf("\nLogin: ");
+    scanf("%s", login);
+    printf("\nSenha: ");
+    scanf("%s", senha);
+
+    if ((strcmp(login, p[0].login) == 0) && (strcmp(senha, p[0].senha) == 0))
+    {                  // Se Ambos Estiverem Certo Entra No Sistema
+        system("cls"); // Limpa a Tela
+    }
+    else
+    { // Mensagem de Erro (Login)
+        printf("\nUsuario e/ou senha incorretos!\nTentar Novamente?\n\n1 - Sim\n0 - Nao\n\nEscolha a Opcao Desejada: ");
+        scanf("%d", &op);
+        switch (op)
+        {
+        case 1:
+            system("cls");
+            telaLogin();
+            break;
+        case 0:
+            exit(0);
+            break;
+        default:
+            // Mensagem de Erro se Escolher Opcão Inválida (Login)
+            printf("Opcao Invalida\nTente Novamente: ");
+            scanf("%d", &op);
+            if (op == 1)
+            {
+                system("cls");
+                telaLogin();
+            }
+            else
+            {
+                exit(0);
+            }
+            break;
+        }
+    }
+}
+// Menu Inicial
+void menuInicial()
+{
+    do
+    {
+        system("cls");
+        printf("-----------------------------------------------------------------------------------\n");
+        printf("\t\tMENU INICIAL - SISTEMA DE CADASTROS E RELATORIOS\n");
+        printf("-----------------------------------------------------------------------------------\n\n");
+        printf("1 - Cadastro de Funcionarios\n");
+        printf("2 - Cadastro de Fornecedores\n");
+        printf("3 - Cadastro de Clientes\n");
+        printf("4 - Relatorio de Funcionarios\n");
+        printf("5 - Relatorio de Fornecedores\n");
+        printf("6 - Relatorio de Clientes\n");
+        printf("7 - Relatorio de Vendas\n");
+        printf("0 - Sair\n\n");
+        printf("Escolha a Opcao Que Voce Deseja Acessar: ");
+        scanf("%d", &op);
+        switch (op)
+        {
+        case 1:
+            system("cls");
+            loginGerencia();    // Tela de Login Gerencial
+            menuCadastroFunc(); // Menu de Cadastro de Funcionários
+            break;
+        case 2:
+            system("cls");
+            menuCadastroForn(); // Menu de Cadastro de Fornecedores
+            break;
+        case 3:
+            system("cls");
+            menuCadastroClien(); // Menu de Cadastro de Clientes
+            break;
+        case 4:
+            system("cls");
+            loginGerencia(); // Tela de Login Gerencial
+            menuRelFunc();   // Menu de Relatório de Funcionários
+            break;
+        case 5:
+            system("cls");
+            menuRelForn(); // Menu de Relatório de Fornecedores
+            break;
+        case 6:
+            system("cls");
+            menuRelClien(); // Menu de Relatório de Clientes
+            break;
+        case 7:
+            system("cls");
+            loginGerencia(); // Tela de Login Gerencial
+            menuRelVendas(); // Menu de Relatório de Vendas
+            break;
+        case 0:
+            exit(0); // Encerra o Sistema
+            break;
+        default:
+            // Mensagem de Erro se Escolher Opcao Inválida (Menu Inicial)
+            printf("\nOpcao invalida!\n\nTentar Novamente?\n\n1 - Sim\n0 - Nao\n\nEscolha a Opcao Desejada: ");
+            scanf("%d", &op);
+            if (op == 1)
+            {
+                system("cls");
+                menuInicial();
+            }
+            else
+            {
+                exit(0);
+            }
+            break;
+        }
+    } while (op != 0); // Encerra Se Teclar 0
+}
+// Cadastro De Funcionários
+void cadastroFunc()
+{
+    if (numCad >= 300)
+    { // Limite de Cadastros
+        printf("\nNumero de Cadastros Chegou ao Limite! Exclua um Cadastro Para Realizar Outro!\n");
+    }
+    else
+    {
+        system("cls");
+        printf("---------------------------------------------------------------------\n");
+        printf("\t\tCADASTRO DE FUNCIONARIOS\n");
+        printf("---------------------------------------------------------------------\n");
+        printf("\nNome........: ");
+        fflush(stdin);
+        fgets(Cad[numCad].nome, 50, stdin);
+        printf("\nEndereco....: ");
+        fflush(stdin);
+        fgets(Cad[numCad].endereco, 50, stdin);
+        printf("\nCPF.........: ");
+        fflush(stdin);
+        fgets(Cad[numCad].cpf, 20, stdin);
+        printf("\nTelefone....: ");
+        fflush(stdin);
+        fgets(Cad[numCad].telefone, 15, stdin);
+        printf("\nCodigo......: ");
+        fflush(stdin);
+        fgets(Cad[numCad].codFunc, 20, stdin);
+        printf("\nDepartamento: ");
+        fflush(stdin);
+        fgets(Cad[numCad].departam, 20, stdin);
+        printf("\nCargo.......: ");
+        fflush(stdin);
+        fgets(Cad[numCad].cargo, 20, stdin);
+        printf("\nSalario.....: ");
+        scanf("%f", &Cad[numCad].salario);
+        numCad++;
+        printf("\n1 - Fazer Outro Cadastro\n2 - Voltar\n0 - Sair\n\nEscolha a Opcao Desejada: ");
+        scanf("%d", &op);
+        switch (op)
+        {
+        case 1:
+            cadastroFunc();
+            break;
+        case 2:
+            menuCadastroFunc();
+            break;
+        case 0:
+            exit(0);
+            break;
+        default:
+            printf("Opcao Invalida!\nTecle Enter Para Voltar ao Menu Inicial\n");
+            getchar();
+            getchar();
+            break;
+        }
+    }
+}
+// Pesquisa de Funcionários
+void pesquisaFunc()
+{
+    char codPesq[20];
+    char nomePesq[50];
+    int psqFeita = 0;
+    int i;
+    system("cls");
+    printf("------------------------------------------------\n");
+    printf("\tPESQUISA DE FUNCIONARIOS\n");
+    printf("------------------------------------------------\n\n");
+    printf("1 - Pesquisar por Codigo do Funcionario\n2 - Pesquisar por Nome\n3 - Voltar\n\nEscolha a Opcao Desejada: ");
+    scanf("%d", &op);
+    switch (op)
+    {
+    case 1:
+        printf("\nDigite o Codigo: ");
+        fflush(stdin);
+        fgets(codPesq, 20, stdin);
+        for (i = 0; i < numCad; i++)
+        {
+            if (strcmp(Cad[i].codFunc, codPesq) == 0)
+            {                      // Compara as Strings se Forem Iguais Imprimi Na Tela
+                psqFeita = 1; // Variável Para Evitar Que Apareça "Codigo Não Encontrado"
+                printf("------------------------------------------------\n");
+                printf("\nNome........: %s", Cad[i].nome);
+                printf("\nEndereco....: %s", Cad[i].endereco);
+                printf("\nCPF.........: %s", Cad[i].cpf);
+                printf("\nTelefone....: %s", Cad[i].telefone);
+                printf("\nCodigo......: %s", Cad[i].codFunc);
+                printf("\nDepartamento: %s", Cad[i].departam);
+                printf("\nCargo.......: %s", Cad[i].cargo);
+                printf("\nSalario.....: %.2f", Cad[i].salario);
+                printf("\n------------------------------------------------\n");
+            }
+        }
+        if (psqFeita == 0)
+        {
+            printf("\nCodigo Nao Encontrado!\n"); // Mensagem de Erro Caso Não Ache o Código
+        }
+        break;
+    case 2:
+        printf("\nDigite o Nome: ");
+        fflush(stdin);
+        fgets(nomePesq, 50, stdin);
+        for (i = 0; i < numCad; i++)
+        {
+            if (strcmp(Cad[i].nome, nomePesq) == 0)
+            { // Compara as Strings se Forem Iguais Imprimi Na Tela
+                psqFeita = 1;
+                printf("------------------------------------------------\n");
+                printf("\nNome........: %s", Cad[i].nome);
+                printf("\nEndereco....: %s", Cad[i].endereco);
+                printf("\nCPF.........: %s", Cad[i].cpf);
+                printf("\nTelefone....: %s", Cad[i].telefone);
+                printf("\nCodigo......: %s", Cad[i].codFunc);
+                printf("\nDepartamento: %s", Cad[i].departam);
+                printf("\nCargo.......: %s", Cad[i].cargo);
+                printf("\nSalario.....: %.2f", Cad[i].salario);
+                printf("\n------------------------------------------------\n");
+            }
+        }
+        if (psqFeita == 0)
+        {
+            printf("\nNome Nao Encontrado!\n"); // Mensagem de Erro Caso Não Ache o Nome
+        }
+        break;
+    case 3:
+        menuCadastroFunc();
+        break;
+    default:
+        printf("\nOpcao Invalida!\nTecle Enter para Tentar Novamente!\n"); // Mensagem de Erro Caso Escolha a Opção Errada
+        getchar();
+        getchar();
+        pesquisaFunc();
+        break;
+    }
+    printf("\n1 - Continuar Pesquisando\n2 - Voltar\n0 - Sair\n\nEscolha a Opcao Desejada: ");
+    scanf("%d", &op);
+    do
+    {
+        switch (op)
+        {
+        case 1:
+            pesquisaFunc();
+            break;
+        case 2:
+            menuCadastroFunc();
+            break;
+        case 0:
+            exit(0);
+            break;
+        default:
+            printf("Opcao Invalida!\nTente Novamente: ");
+            scanf("%d", &op);
+            if (op == 0)
+            {
+                exit(0);
+            }
+            else
+            {
+                menuCadastroFunc();
+            }
+            break;
+        }
+    } while (op == 1);
+    printf("\n");
+}
+// Exibir Cadastros de Funcionários
+void exibirFunc()
+{
+    int i;
+    system("cls");
+    printf("------------------------------------------------\n");
+    printf("\tEXIBIR CADASTROS DE FUNCIONARIOS\n");
+    printf("------------------------------------------------");
+
+    for (i = 0; i < numCad; i++)
+    {
+        printf("\n\nNome........: %s", Cad[i].nome);
+        printf("\nEndereco....: %s", Cad[i].endereco);
+        printf("\nCPF.........: %s", Cad[i].cpf);
+        printf("\nTelefone....: %s", Cad[i].telefone);
+        printf("\nCodigo......: %s", Cad[i].codFunc);
+        printf("\nDepartamento: %s", Cad[i].departam);
+        printf("\nCargo.......: %s", Cad[i].cargo);
+        printf("\nSalario.....: %.2f", Cad[i].salario);
+        printf("\n\n------------------------------------------------");
+    }
+    printf("\n\n1 - Voltar\n0 - Sair\n\nEscolha a Opcao Desejada: ");
+    scanf("%d", &op);
+    switch (op)
+    {
+    case 1:
+        menuCadastroFunc();
+        break;
+    case 0:
+        exit(0);
+        break;
+    default:
+        printf("Opcao Invalida!\nTente Novamente: "); // Mensagem de Erro Caso Escolha Opção Errada
+        scanf("%d", &op);
+        if (op == 1)
+        {
+            menuCadastroFunc();
+        }
+        else
+        {
+            exit(0);
+        }
+        break;
+    }
+}
+// Alterar Dados do Funcionário
+void alterarDadosFunc()
+{
+    system("cls");
+    int i;
+    int bscFeita = 0;
+    char nomeAlt[50];
+    char cpfAlt[20];
+    char endAlt[50];
+    char telAlt[15];
+    char codAlt[15];
+
+    printf("------------------------------------------------\n");
+    printf("\tALTERAR CADASTRO DE FUNCIONARIOS\n");
+    printf("------------------------------------------------\n");
+    printf("\n1 - Nome\n");
+    printf("2 - Endereco\n");
+    printf("3 - CPF\n");
+    printf("4 - Telefone\n");
+    printf("5 - Codigo");
+    printf("\nEscolha a Opcao Desejada: ");
+    scanf("%d", &op);
+
+    switch (op)
+    {
+    case 1:
+        printf("\nDigite o Nome do Funcionario: ");
+        fflush(stdin);
+        fgets(nomeAlt, 50, stdin);
+        for (i = 0; i < numCad; i++)
+        {
+            if (strcmp(Cad[i].nome, nomeAlt) == 0)
+            {
+                bscFeita = 1; // Variável Para Evitar Que Desça Pro Comando Abaixo, Já Que Vai Alterar a Variável Cad[i].nome
+                printf("Digite o Nome Atualizado: ");
+                fflush(stdin);
+                fgets(Cad[i].nome, 50, stdin);
+                printf("\nNome Atualizado!");
+            }
+        }
+        if (bscFeita == 0)
+        {
+            printf("\n\nNome Invalido!\n\n1 - Tente Novamente\n2 - Voltar\n0 - Sair\n\nEscolha a Opcao Desejada: ");
+            scanf("%d", &op);
+            switch (op)
+            {
+            case 1:
+                alterarDadosFunc();
+                break;
+            case 0:
+                exit(0);
+                break;
+            default:
+                menuCadastroFunc();
+                break;
+            }
+        }
+        break;
+    case 2:
+        printf("\nDigite o Endereco do Funcionario: ");
+        fflush(stdin);
+        fgets(endAlt, 50, stdin);
+        for (i = 0; i < numCad; i++)
+        {
+            if (strcmp(Cad[i].endereco, endAlt) == 0)
+            {
+                bscFeita = 1;
+                printf("Digite o Endereco Atualizado: ");
+                fflush(stdin);
+                fgets(Cad[i].endereco, 50, stdin);
+                printf("\nEndereco Atualizado!");
+            }
+        }
+        if (bscFeita == 0)
+        {
+            printf("\n\nEndereco Invalido!\n\n1 - Tente Novamente\n2 - Voltar\n0 - Sair\n\nEscolha a Opcao Desejada: ");
+            scanf("%d", &op);
+            switch (op)
+            {
+            case 1:
+                alterarDadosFunc();
+                break;
+            case 0:
+                exit(0);
+                break;
+            default:
+                menuCadastroFunc();
+                break;
+            }
+        }
+        break;
+    case 3:
+        printf("\nDigite o CPF do Funcionario: ");
+        fflush(stdin);
+        fgets(cpfAlt, 20, stdin);
+        for (i = 0; i < numCad; i++)
+        {
+            if (strcmp(Cad[i].cpf, cpfAlt) == 0)
+            {
+                bscFeita = 1;
+                printf("Digite o CPF Atualizado: ");
+                fflush(stdin);
+                fgets(Cad[i].cpf, 20, stdin);
+                printf("\nCPF Atualizado!");
+            }
+        }
+        if (bscFeita == 0)
+        {
+            printf("\n\nCPF Invalido!\n\n1 - Tente Novamente\n2 - Voltar\n0 - Sair\n\nEscolha a Opcao Desejada: ");
+            scanf("%d", &op);
+            switch (op)
+            {
+            case 1:
+                alterarDadosFunc();
+                break;
+            case 0:
+                exit(0);
+                break;
+            default:
+                menuCadastroFunc();
+                break;
+            }
+        }
+        break;
+    case 4:
+        printf("\nDigite o Telefone do Funcionario: ");
+        fflush(stdin);
+        fgets(telAlt, 15, stdin);
+        for (i = 0; i < numCad; i++)
+        {
+            if (strcmp(Cad[i].telefone, telAlt) == 0)
+            {
+                bscFeita = 1;
+                printf("Digite o Telefone Atualizado: ");
+                fflush(stdin);
+                fgets(Cad[i].telefone, 15, stdin);
+                printf("\nTelefone Atualizado!");
+            }
+        }
+        if (bscFeita == 0)
+        {
+            printf("\n\nTelefone Invalido\n\n1 - Tente Novamente\n2 - Voltar\n0 - Sair\n\nEscolha a Opcao Desejada: ");
+            scanf("%d", &op);
+            switch (op)
+            {
+            case 1:
+                alterarDadosFunc();
+                break;
+            case 0:
+                exit(0);
+                break;
+            default:
+                menuCadastroFunc();
+                break;
+            }
+        }
+        break;
+    case 5:
+        printf("\nDigite o Codigo do Funcionario: ");
+        fflush(stdin);
+        fgets(codAlt, 20, stdin);
+        for (i = 0; i < numCad; i++)
+        {
+            if (strcmp(Cad[i].codFunc, codAlt) == 0)
+            {
+                bscFeita = 1;
+                printf("Digite o Codigo Atualizado: ");
+                fflush(stdin);
+                fgets(Cad[i].codFunc, 20, stdin);
+                printf("\nCodigo Atualizado!");
+            }
+        }
+        if (bscFeita == 0)
+        {
+            printf("\n\nCodigo Invalido!\n\n1 - Tente Novamente\n2 - Voltar\n0 - Sair\n\nEscolha a Opcao Desejada: ");
+            scanf("%d", &op);
+            switch (op)
+            {
+            case 1:
+                alterarDadosFunc();
+                break;
+            case 0:
+                exit(0);
+                break;
+            default:
+                menuCadastroFunc();
+                break;
+            }
+        }
+        break;
+    default:
+        printf("Opcao Invalida!\n\nTecle Enter Para Tentar Novamente!");
+        getchar();
+        getchar();
+        alterarDadosFunc();
+        break;
+    }
+    printf("\n\n1 - Continuar Alterando\n2 - Voltar\n0 - Sair\n\nEscolha a Opcao Desejada: ");
+    scanf("%d", &op);
+    switch (op)
+    {
+    case 1:
+        alterarDadosFunc();
+        break;
+    case 2:
+        menuCadastroFunc();
+        break;
+    case 0:
+        exit(0);
+        break;
+    }
+}
+// Excluir Funcionários
+void excluirFunc()
+{
+    int i, e;
+    char codExcl[20];
+    int excFeita = 0;
+    system("cls");
+    printf("------------------------------------------------\n");
+    printf("\tEXCLUIR CADASTRO DE FUNCIONARIOS\n");
+    printf("------------------------------------------------\n");
+    printf("\nDigite o Codigo do Funcionario Que Voce Deseja Apagar os Dados: ");
+    fflush(stdin);
+    fgets(codExcl, 20, stdin);
+
+    for (i = 0; i < numCad; i++)
+    {
+        if (strcmp(Cad[i].codFunc, codExcl) == 0)
+        {
+            excFeita = 1;
+            for (e = i; e < numCad; e++)
+            { // Exclui os Dados Inclusive o Vetor, Sem Usar o Memset que Apenas Zera a Memória.
+                Cad[e] = Cad[e + 1];
+            }
+            numCad--;
+            printf("\nTodos os Dados Foram Excluidos!");
+        }
+    }
+    if (excFeita == 0)
+    {
+        printf("\nCadastro Nao Encontrado!\n\nTentar Novamente?\n\n1 - Sim\n0 - Nao\n\nEscolha a Opcao Desejada: ");
+        scanf("%d", &op); // Mensagem de Erro Caso Não Ache o Cadastro
+        switch (op)
+        {
+        case 1:
+            excluirFunc();
+            break;
+        default:
+            menuCadastroFunc();
+            break;
+        }
+    }
+    printf("\n\n1 - Continuar Excluindo\n2 - Voltar\n0 - Sair\n\nEscolha a Opcao Desejada: ");
+    scanf("%d", &op);
+    switch (op)
+    {
+    case 1:
+        excluirFunc();
+        break;
+    case 0:
+        exit(0);
+        break;
+    default:
+        menuCadastroFunc();
+        break;
+    }
+}
+// Menu de Cadastro de Funcionários
+void menuCadastroFunc()
+{
+    system("cls");
+    printf("------------------------------------------------\n");
+    printf("\tMENU DE CADASTRO DE FUNCIONARIOS\n");
+    printf("------------------------------------------------\n\n");
+    printf("1 - Realizar cadastro\n");
+    printf("2 - Pesquisar\n");
+    printf("3 - Exibir\n");
+    printf("4 - Alterar\n");
+    printf("5 - Excluir\n");
+    printf("6 - Voltar\n");
+    printf("0 - Sair\n");
+    printf("\nEscolha a Opcao Que Voce Deseja Acessar: ");
+    scanf("%d", &op);
+
+    switch (op)
+    {
+    case 1:
+        cadastroFunc();
+        break;
+    case 2:
+        pesquisaFunc();
+        break;
+    case 3:
+        exibirFunc();
+        break;
+    case 4:
+        alterarDadosFunc();
+        break;
+    case 5:
+        excluirFunc();
+        break;
+    case 6:
+        menuInicial();
+        break;
+    case 0:
+        exit(0);
+        break;
+    default:
+        // Mensagem de Erro se Escolher Opcao Inválida (Menu de Cadastro de Funcionarios)
+        printf("\nOpcao invalida!\n\nTentar Novamente?\n\n1 - Sim\n0 - Nao\n\nEscolha a Opcao Desejada: ");
+        scanf("%d", &op);
+        if (op == 1)
+        {
+            system("cls");
+            menuCadastroFunc();
+        }
+        else
+        {
+            exit(0);
+        }
+        break;
+    }
+}
+// Menu de Cadastro de Fornecedores
+void menuCadastroForn()
+{
+    system("cls");
+    printf("------------------------------------------------\n");
+    printf("\tMENU DE CADASTRO DE FORNECEDORES\n");
+    printf("------------------------------------------------\n\n");
+    printf("1 - Realizar cadastro\n");
+    printf("2 - Pesquisar\n");
+    printf("3 - Exibir\n");
+    printf("4 - Alterar\n");
+    printf("5 - Excluir\n");
+    printf("6 - Voltar\n");
+    printf("0 - Sair\n");
+    printf("\nEscolha a Opcao Que Voce Deseja Acessar: ");
+    scanf("%d", &op);
+
+    switch (op)
+    {
+    case 1:
+        cadastroForn();
+        break;
+    case 2:
+        pesquisaForn();
+        break;
+    case 3:
+        exibirForn();
+        break;
+    case 4:
+        alterarDadosForn();
+        break;
+    case 5:
+        excluirForn();
+        break;
+    case 6:
+        menuInicial();
+        break;
+    case 0:
+        exit(0);
+        break;
+    default:
+        // Mensagem de Erro se Escolher Opcao Inválida (Menu de Cadastro de Funcionarios)
+        printf("\nOpcao invalida!\n\nTentar Novamente?\n\n1 - Sim\n0 - Nao\n\nEscolha a Opcao Desejada: ");
+        scanf("%d", &op);
+        if (op == 1)
+        {
+            system("cls");
+            menuCadastroForn();
+        }
+        else
+        {
+            exit(0);
+        }
+        break;
+    }
+}
+// Cadastro De Fornecedores
+void cadastroForn()
+{
+    do
+    {
+        if (numCadFr >= 300)
+        {
+            printf("\nNumero de Cadastros Chegou ao Limite! Exclua um Cadastro Para Realizar Outro!\n");
+        }
+        else
+        {
+            system("cls");
+            printf("---------------------------------------------------------------------\n");
+            printf("\t\tCADASTRO DE FORNECEDORES\n");
+            printf("---------------------------------------------------------------------\n");
+            printf("\nNome/Empresa: ");
+            fflush(stdin);
+            fgets(CadForn[numCadFr].nome, 50, stdin);
+            printf("\nCNPJ........: ");
+            fflush(stdin);
+            fgets(CadForn[numCadFr].cnpj, 20, stdin);
+            printf("\nProduto.....: ");
+            fflush(stdin);
+            fgets(CadForn[numCadFr].produto, 50, stdin);
+            printf("\nCodigo......: ");
+            fflush(stdin);
+            fgets(CadForn[numCadFr].codigoP, 20, stdin);
+            printf("\nQuantidade..: ");
+            scanf("%d", &CadForn[numCadFr].qtd);
+            numCadFr++;
+            printf("\n1 - Fazer Outro Cadastro\n2 - Voltar\n0 - Sair\n\nEscolha a Opcao Desejada: ");
+            scanf("%d", &op);
+            switch (op)
+            {
+            case 2:
+                menuCadastroForn();
+                break;
+            case 0:
+                exit(0);
+                break;
+            }
+        }
+    } while (op == 1); // Reinicia se Teclar 1, Para Fazer Outro Cadastro
+}
+// Pesquisar Fornecedor
+void pesquisaForn()
+{
+    char cnpjPesq[20];
+    char nomePesq[50];
+    int psqFeita = 0;
+    int i;
+    system("cls");
+    printf("------------------------------------------------\n");
+    printf("\tPESQUISA DE FORNECEDORES\n");
+    printf("------------------------------------------------\n\n");
+    printf("1 - Pesquisar por CNPJ do Fornecedor\n2 - Pesquisar por Nome/Empresa\n3 - Voltar\n\nEscolha a Opcao Desejada: ");
+    scanf("%d", &op);
+    switch (op)
+    {
+    case 1:
+        printf("\nDigite o CNPJ: ");
+        fflush(stdin);
+        fgets(cnpjPesq, 20, stdin);
+        for (i = 0; i < numCadFr; i++)
+        {
+            if (strcmp(CadForn[i].cnpj, cnpjPesq) == 0)
+            {                      // Compara as Strings se Forem Iguais Imprimi Na Tela
+                psqFeita = 1; // Variável Para Evitar Que Apareça "CNPJ Não Encontrado"
+                printf("------------------------------------------------\n");
+                printf("\nNome/Empresa: %s", CadForn[i].nome);
+                printf("\nCNPJ........: %s", CadForn[i].cnpj);
+                printf("\nProduto.....: %s", CadForn[i].produto);
+                printf("\nCodigo......: %s", CadForn[i].codigoP);
+                printf("\nQuantidade..: %d\n", CadForn[i].qtd);
+                printf("\n\n------------------------------------------------\n");
+            }
+        }
+        if (psqFeita == 0)
+        {
+            printf("\nCNPJ Nao Encontrado!\n"); // Mensagem de Erro Caso Não Ache o CNPJ
+        }
+        break;
+    case 2:
+        printf("\nDigite o Nome/Empresa: ");
+        fflush(stdin);
+        fgets(nomePesq, 50, stdin);
+        for (i = 0; i < numCadFr; i++)
+        {
+            if (strcmp(CadForn[i].nome, nomePesq) == 0)
+            { // Compara as Strings se Forem Iguais Imprimi Na Tela
+                psqFeita = 1;
+                printf("------------------------------------------------\n");
+                printf("\nNome/Empresa: %s", CadForn[i].nome);
+                printf("\nCNPJ........: %s", CadForn[i].cnpj);
+                printf("\nProduto.....: %s", CadForn[i].produto);
+                printf("\nCodigo......: %s", CadForn[i].codigoP);
+                printf("\nQuantidade..: %d", CadForn[i].qtd);
+                printf("\n------------------------------------------------\n");
+            }
+        }
+        if (psqFeita == 0)
+        {
+            printf("\nNome/Empresa Nao Encontrado!\n"); // Mensagem de Erro Caso Não Ache o Nome
+        }
+        break;
+    case 3:
+        menuCadastroForn();
+        break;
+    default:
+        printf("\nOpcao invalida!\nTecle Enter Para Tentar Novamente!\n"); // Mensagem de Erro Caso Escolha a Opção Errada
+        getchar();
+        getchar();
+        pesquisaForn();
+        break;
+    } // switch
+    printf("\n1 - Continuar Pesquisando\n2 - Voltar\n0 - Sair\n\nEscolha a Opcao Desejada: ");
+    scanf("%d", &op);
+    do
+    {
+        switch (op)
+        {
+        case 1:
+            pesquisaForn();
+            break;
+        case 2:
+            menuCadastroForn();
+            break;
+        case 0:
+            exit(0);
+            break;
+        default:
+            printf("Opcao Invalida!\nTente Novamente: ");
+            scanf("%d", &op);
+            if (op == 0)
+            {
+                exit(0);
+            }
+            else
+            {
+                menuCadastroForn();
+            }
+            break;
+        }
+    } while (op == 1);
+    printf("\n");
+}
+
+// Exibir Cadastros de Fornecedores
+void exibirForn()
+{
+    struct tm tempo;
+    time_t tempoSeg;
+    time(&tempoSeg);
+    tempo = *localtime(&tempoSeg);
+    data Data;
+    Data.dia = tempo.tm_mday;
+    Data.mes = tempo.tm_mon + 1;     // Começa Contar do 0, Entao Acrescenta 1
+    Data.ano = tempo.tm_year + 1900; // O Ano em C Começa em 1900
+    int i;
+    system("cls");
+    printf("------------------------------------------------\n");
+    printf("\tEXIBIR CADASTROS DE FORNECEDORES");
+    printf("\n------------------------------------------------");
+
+    for (i = 0; i < numCadFr; i++)
+    {
+        printf("\n\nNome/Empresa: %s", CadForn[i].nome);
+        printf("\nCNPJ........: %s", CadForn[i].cnpj);
+        printf("\nProduto.....: %s", CadForn[i].produto);
+        printf("\nCodigo......: %s", CadForn[i].codigoP);
+        printf("\nQuantidade..: %d", CadForn[i].qtd);
+        printf("\n\nData........: %02d/%02d/%d\n", Data.dia, Data.mes, Data.ano);
+        printf("\n------------------------------------------------");
+    }
+    printf("\n\n1 - Voltar\n0 - Sair\n\nEscolha a Opcao Desejada: ");
+    scanf("%d", &op);
+    switch (op)
+    {
+    case 1:
+        menuCadastroForn();
+        break;
+    case 0:
+        exit(0);
+        break;
+    default:
+        printf("Opcao Invalida!\nTente Novamente: "); // Mensagem de Erro Caso Escolha Opção Errada
+        scanf("%d", &op);
+        if (op == 1)
+        {
+            menuCadastroForn();
+        }
+        else
+        {
+            exit(0);
+        }
+        break;
+    }
+}
+// Alterar Dados do Fornecedor
+void alterarDadosForn()
+{
+    system("cls");
+    int i;
+    int bscFeita = 0;
+    char nomeAlt[50];
+    char cnpjAlt[20];
+    char codPrAlt[20];
+    int qtdAlt;
+
+    printf("------------------------------------------------\n");
+    printf("\tALTERAR DADOS DO FORNECEDOR\n");
+    printf("------------------------------------------------\n");
+    printf("\n1 - Nome/Empresa\n");
+    printf("2 - CNPJ\n");
+    printf("3 - Codigo do Produto\n");
+    printf("\nEscolha a Opcao Desejada: ");
+    scanf("%d", &op);
+
+    switch (op)
+    {
+    case 1:
+        printf("\nDigite o Nome/Empresa do Fornecedor: ");
+        fflush(stdin);
+        fgets(nomeAlt, 50, stdin);
+        for (i = 0; i < numCadFr; i++)
+        {
+            if (strcmp(CadForn[i].nome, nomeAlt) == 0)
+            {
+                bscFeita = 1; // Variável Para Evitar Que Desça Pro Comando Abaixo, Já Que Vai Alterar a Variável Cad[i].nome
+                printf("Digite o Nome Atualizado: ");
+                fflush(stdin);
+                fgets(CadForn[i].nome, 50, stdin);
+                printf("\nNome Atualizado!");
+            }
+        }
+        if (bscFeita == 0)
+        {
+            printf("\n\nNome Invalido!\n\n1 - Tente Novamente\n2 - Voltar\n0 - Sair\n\nEscolha a Opcao Desejada: ");
+            scanf("%d", &op);
+            switch (op)
+            {
+            case 1:
+                alterarDadosForn();
+                break;
+            case 0:
+                exit(0);
+                break;
+            default:
+                menuCadastroForn();
+                break;
+            }
+        }
+        break;
+    case 2:
+        printf("\nDigite o CNPJ do Fornecedor: ");
+        fflush(stdin);
+        fgets(cnpjAlt, 50, stdin);
+        for (i = 0; i < numCadFr; i++)
+        {
+            if (strcmp(CadForn[i].cnpj, cnpjAlt) == 0)
+            {
+                bscFeita = 1;
+                printf("Digite o CNPJ Atualizado: ");
+                fflush(stdin);
+                fgets(CadForn[i].cnpj, 50, stdin);
+                printf("\nCNPJ Atualizado!");
+            }
+        }
+        if (bscFeita == 0)
+        {
+            printf("\n\nCNPJ Invalido!\n\n1 - Tente Novamente\n2 - Voltar\n0 - Sair\n\nEscolha a Opcao Desejada: ");
+            scanf("%d", &op);
+            switch (op)
+            {
+            case 1:
+                alterarDadosForn();
+                break;
+            case 0:
+                exit(0);
+                break;
+            default:
+                menuCadastroForn();
+                break;
+            }
+        }
+        break;
+    case 3:
+        printf("\nDigite o Codigo do Produto: ");
+        fflush(stdin);
+        fgets(codPrAlt, 20, stdin);
+        for (i = 0; i < numCadFr; i++)
+        {
+            if (strcmp(CadForn[i].codigoP, codPrAlt) == 0)
+            {
+                bscFeita = 1;
+                printf("Digite o Codigo do Produto Atualizado: ");
+                fflush(stdin);
+                fgets(CadForn[i].codigoP, 20, stdin);
+                printf("\nCodigo do Produto Atualizado!");
+            }
+        }
+        if (bscFeita == 0)
+        {
+            printf("\n\nCodigo do Produto Invalido!\n\n1 - Tente Novamente\n2 - Voltar\n0 - Sair\n\nEscolha a Opcao Desejada: ");
+            scanf("%d", &op);
+            switch (op)
+            {
+            case 1:
+                alterarDadosForn();
+                break;
+            case 0:
+                exit(0);
+                break;
+            default:
+                menuCadastroForn();
+                break;
+            }
+        }
+        break;
+    default:
+            printf("\nOpcao Invalida\nTecle Enter Para Tentar Novamente!");
+            getchar();
+            getchar();
+            alterarDadosForn();
+        break;
+    }
+    printf("\n\n1 - Continuar Alterando\n2 - Voltar\n0 - Sair\n\nEscolha a Opcao Desejada: ");
+    scanf("%d", &op);
+    switch (op)
+    {
+    case 1:
+        alterarDadosForn();
+        break;
+    case 2:
+        menuCadastroForn();
+        break;
+    case 0:
+        exit(0);
+        break;
+    }
+}
+// Excluir Fornecedor
+void excluirForn()
+{
+    int i, e;
+    char cnpjExcl[20];
+    int excFeita = 0;
+    system("cls");
+    printf("------------------------------------------------\n");
+    printf("\tEXCLUIR CADASTRO DE FORNECEDORES\n");
+    printf("------------------------------------------------\n");
+    printf("\nDigite o CNPJ do Fornecedor Que Voce Deseja Apagar os Dados: ");
+    fflush(stdin);
+    fgets(cnpjExcl, 20, stdin);
+
+    for (i = 0; i < numCadFr; i++)
+    {
+        if (strcmp(CadForn[i].cnpj, cnpjExcl) == 0)
+        {
+            excFeita = 1;
+            for (e = i; e < numCadFr; e++)
+            { // Exclui os Dados Inclusive o Vetor, Sem Usar o Memset que Apenas Zera a Memória.
+                CadForn[e] = CadForn[e + 1];
+            }
+            numCadFr--;
+            printf("\nTodos os Dados Foram Excluidos!");
+        }
+    }
+    if (excFeita == 0)
+    {
+        printf("\nCadastro Nao Encontrado!\n\nTentar Novamente?\n\n1 - Sim\n0 - Nao\n\nEscolha a Opcao Desejada: ");
+        scanf("%d", &op); // Mensagem de Erro Caso Não Ache o Cadastro
+        switch (op)
+        {
+        case 1:
+            excluirForn();
+            break;
+        default:
+            menuCadastroForn();
+            break;
+        }
+    }
+    printf("\n\n1 - Continuar Excluindo\n2 - Voltar\n0 - Sair\n\nEscolha a Opcao Desejada: ");
+    scanf("%d", &op);
+    switch (op)
+    {
+    case 1:
+        excluirForn();
+        break;
+    case 0:
+        exit(0);
+        break;
+    default:
+        menuCadastroForn();
+        break;
+    }
+}
+
+// Menu de Cadastro de Clientes
+void menuCadastroClien()
+{
+    system("cls");
+    printf("------------------------------------------------\n");
+    printf("\tMENU DE CADASTRO DE CLIENTES\n");
+    printf("------------------------------------------------\n\n");
+    printf("1 - Realizar cadastro\n");
+    printf("2 - Pesquisar\n");
+    printf("3 - Exibir\n");
+    printf("4 - Alterar\n");
+    printf("5 - Excluir\n");
+    printf("6 - Voltar\n");
+    printf("0 - Sair\n");
+    printf("\nEscolha a Opcao Que Voce Deseja Acessar: ");
+    scanf("%d", &op);
+
+    switch (op)
+    {
+    case 1:
+        cadastroClien();
+        break;
+    case 2:
+        pesquisaClien();
+        break;
+    case 3:
+        exibirClien();
+        break;
+    case 4:
+        alterarDadosClien();
+        break;
+    case 5:
+        excluirClien();
+        break;
+    case 6:
+        menuInicial();
+        break;
+    case 0:
+        exit(0);
+        break;
+    default:
+        // Mensagem de Erro se Escolher Opcao Inválida (Menu de Cadastro de Funcionarios)
+        printf("\nOpcao invalida!\n\nTentar Novamente?\n\n1 - Sim\n0 - Nao\n\nEscolha a Opcao Desejada: ");
+        scanf("%d", &op);
+        if (op == 1)
+        {
+            system("cls");
+            menuCadastroClien();
+        }
+        else
+        {
+            exit(0);
+        }
+        break;
+    }
+}
+// Cadastro de Clientes
+void cadastroClien()
+{
+    do
+    {
+        if (numCadCl >= 300)
+        {
+            printf("\nNumero de Cadastros Chegou ao Limite! Exclua um Cadastro Para Realizar Outro!\n");
+        }
+        else
+        {
+            system("cls");
+            printf("---------------------------------------------------------------------\n");
+            printf("\t\tCADASTRO DE CLIENTES\n");
+            printf("---------------------------------------------------------------------\n");
+            printf("\nNome....: ");
+            fflush(stdin);
+            fgets(CadClien[numCadCl].nome, 50, stdin);
+            printf("\nEndereco: ");
+            fflush(stdin);
+            fgets(CadClien[numCadCl].endereco, 50, stdin);
+            printf("\nCPF.....: ");
+            fflush(stdin);
+            fgets(CadClien[numCadCl].cpf, 20, stdin);
+            printf("\nTelefone: ");
+            fflush(stdin);
+            fgets(CadClien[numCadCl].telefone, 15, stdin);
+            numCadCl++;
+            printf("\n1 - Fazer Outro Cadastro\n2 - Voltar\n0 - Sair\n\nEscolha a Opcao Desejada: ");
+            scanf("%d", &op);
+            switch (op)
+            {
+            case 2:
+                menuCadastroClien();
+                break;
+            case 0:
+                exit(0);
+                break;
+            }
+        }
+    } while (op == 1); // Reinicia se Teclar 1, Para Fazer Outro Cadastro
+}
+// Pesquisa de Clientes
+void pesquisaClien()
+{
+    char cpfPesq[20];
+    char nomePesq[50];
+    int psqFeita = 0;
+    int i;
+    system("cls");
+    printf("------------------------------------------------\n");
+    printf("\tPESQUISA DE CLIENTES\n");
+    printf("------------------------------------------------\n\n");
+    printf("1 - Pesquisar por CPF do Cliente\n2 - Pesquisar por Nome\n3 - Voltar\n\nEscolha a Opcao Desejada: ");
+    scanf("%d", &op);
+    switch (op)
+    {
+    case 1:
+        printf("\nDigite o CPF: ");
+        fflush(stdin);
+        fgets(cpfPesq, 20, stdin);
+        for (i = 0; i < numCadCl; i++)
+        {
+            if (strcmp(CadClien[i].cpf, cpfPesq) == 0)
+            {                      // Compara as Strings se Forem Iguais Imprimi Na Tela
+                psqFeita = 1; // Variável Para Evitar Que Apareça "CPF Não Encontrado"
+                printf("------------------------------------------------\n");
+                printf("\nNome........: %s", CadClien[i].nome);
+                printf("\nEndereco....: %s", CadClien[i].endereco);
+                printf("\nCPF.........: %s", CadClien[i].cpf);
+                printf("\nTelefone....: %s", CadClien[i].telefone);
+                printf("\n------------------------------------------------\n");
+            }
+        }
+        if (psqFeita == 0)
+        {
+            printf("\nCPF Nao Encontrado!\n"); // Mensagem de Erro Caso Não Ache o CPF
+        }
+        break;
+    case 2:
+        printf("\nDigite o Nome: ");
+        fflush(stdin);
+        fgets(nomePesq, 50, stdin);
+        for (i = 0; i < numCadCl; i++)
+        {
+            if (strcmp(CadClien[i].nome, nomePesq) == 0)
+            { // Compara as Strings se Forem Iguais Imprimi Na Tela
+                psqFeita = 1;
+                printf("------------------------------------------------\n");
+                printf("\nNome........: %s", CadClien[i].nome);
+                printf("\nEndereco....: %s", CadClien[i].endereco);
+                printf("\nCPF.........: %s", CadClien[i].cpf);
+                printf("\nTelefone....: %s", CadClien[i].telefone);
+                printf("\n------------------------------------------------\n");
+            }
+        }
+        if (psqFeita == 0)
+        {
+            printf("\nNome Nao Encontrado!\n"); // Mensagem de Erro Caso Não Ache o Nome
+        }
+        break;
+    case 3:
+        menuCadastroClien();
+        break;
+    default:
+        printf("\nOpcao invalida!\nTente Novamente!\n\n"); // Mensagem de Erro Caso Escolha a Opção Errada
+        pesquisaClien();
+        break;
+    } // switch
+    printf("\n1 - Continuar Pesquisando\n2 - Voltar\n0 - Sair\n\nEscolha a Opcao Desejada: ");
+    scanf("%d", &op);
+    do
+    {
+        switch (op)
+        {
+        case 1:
+            pesquisaClien();
+            break;
+        case 2:
+            menuCadastroClien();
+            break;
+        case 0:
+            exit(0);
+            break;
+        default:
+            printf("Opcao Invalida!\nTente Novamente: ");
+            scanf("%d", &op);
+            if (op == 0)
+            {
+                exit(0);
+            }
+            else
+            {
+                menuCadastroClien();
+            }
+            break;
+        }
+    } while (op == 1);
+    printf("\n");
+}
+
+// Exibir Cadastros de Clientes
+void exibirClien()
+{
+    int i;
+    system("cls");
+    printf("------------------------------------------------\n");
+    printf("\tEXIBIR CADASTRO DE CLIENTES");
+    printf("\n------------------------------------------------");
+
+    for (i = 0; i < numCadCl; i++)
+    {
+        printf("\n\nNome....: %s", CadClien[i].nome);
+        printf("\nEndereco: %s", CadClien[i].endereco);
+        printf("\nCPF.....: %s", CadClien[i].cpf);
+        printf("\nTelefone: %s", CadClien[i].telefone);
+        printf("\n------------------------------------------------");
+    }
+    printf("\n\n1 - Voltar\n0 - Sair\n\nEscolha a Opcao Desejada: ");
+    scanf("%d", &op);
+    switch (op)
+    {
+    case 1:
+        menuCadastroClien();
+        break;
+    case 0:
+        exit(0);
+        break;
+    default:
+        printf("Opcao Invalida!\nTente Novamente: "); // Mensagem de Erro Caso Escolha Opção Errada
+        scanf("%d", &op);
+        if (op == 1)
+        {
+            menuCadastroClien();
+        }
+        else
+        {
+            exit(0);
+        }
+        break;
+    }
+}
+// Alterar Dados do Cliente
+void alterarDadosClien()
+{
+    system("cls");
+    int i;
+    int bscFeita = 0;
+    char nomeAlt[50];
+    char cpfAlt[20];
+    char endAlt[50];
+    char telAlt[15];
+
+    printf("------------------------------------------------\n");
+    printf("\tALTERAR CADASTRO DE CLIENTES\n");
+    printf("------------------------------------------------\n");
+    printf("\n1 - Nome do Cliente     \n");
+    printf("2 - Endereco do Cliente   \n");
+    printf("3 - CPF do Cliente       \n");
+    printf("4 - Telefone do Cliente \n\n");
+    printf("Escolha a Opcao Desejada: ");
+    scanf("%d", &op);
+
+    switch (op)
+    {
+    case 1:
+        printf("\nDigite o Nome do Cliente: ");
+        fflush(stdin);
+        fgets(nomeAlt, 50, stdin);
+        for (i = 0; i < numCadCl; i++)
+        {
+            if (strcmp(CadClien[i].nome, nomeAlt) == 0)
+            {
+                bscFeita = 1; // Variável Para Evitar Que Desça Pro Comando Abaixo, Já Que Vai Alterar a Variável CadClien[i].nome
+                printf("Digite o Nome Atualizado: ");
+                fflush(stdin);
+                fgets(CadClien[i].nome, 50, stdin);
+                printf("\nNome Atualizado!");
+            }
+        }
+        if (bscFeita == 0)
+        {
+            printf("\n\nNome Invalido!\n\n1 - Tente Novamente\n2 - Voltar\n0 - Sair\n\nEscolha a Opcao Desejada: ");
+            scanf("%d", &op);
+            switch (op)
+            {
+            case 1:
+                alterarDadosClien();
+                break;
+            case 0:
+                exit(0);
+                break;
+            default:
+                menuCadastroClien();
+                break;
+            }
+        }
+        break;
+    case 2:
+        printf("\nDigite o Endereco do Cliente: ");
+        fflush(stdin);
+        fgets(endAlt, 50, stdin);
+        for (i = 0; i < numCadCl; i++)
+        {
+            if (strcmp(CadClien[i].endereco, endAlt) == 0)
+            {
+                bscFeita = 1;
+                printf("Digite o Endereco Atualizado: ");
+                fflush(stdin);
+                fgets(CadClien[i].endereco, 50, stdin);
+                printf("\nEndereco Atualizado!");
+            }
+        }
+        if (bscFeita == 0)
+        {
+            printf("\n\nEndereco Invalido!\n\n1 - Tente Novamente\n2 - Voltar\n0 - Sair\n\nEscolha a Opcao Desejada: ");
+            scanf("%d", &op);
+            switch (op)
+            {
+            case 1:
+                alterarDadosClien();
+                break;
+            case 0:
+                exit(0);
+                break;
+            default:
+                menuCadastroClien();
+                break;
+            }
+        }
+        break;
+    case 3:
+        printf("\nDigite o CPF do Cliente: ");
+        fflush(stdin);
+        fgets(cpfAlt, 20, stdin);
+        for (i = 0; i < numCadCl; i++)
+        {
+            if (strcmp(CadClien[i].cpf, cpfAlt) == 0)
+            {
+                bscFeita = 1;
+                printf("Digite o CPF Atualizado: ");
+                fflush(stdin);
+                fgets(CadClien[i].cpf, 20, stdin);
+                printf("\nCPF Atualizado!");
+            }
+        }
+        if (bscFeita == 0)
+        {
+            printf("\n\nCPF Invalido!\n\n1 - Tente Novamente\n2 - Voltar\n0 - Sair\n\nEscolha a Opcao Desejada: ");
+            scanf("%d", &op);
+            switch (op)
+            {
+            case 1:
+                alterarDadosClien();
+                break;
+            case 0:
+                exit(0);
+                break;
+            default:
+                menuCadastroClien();
+                break;
+            }
+        }
+        break;
+    default:
+        printf("\nDigite o Telefone do Cliente: ");
+        fflush(stdin);
+        fgets(telAlt, 15, stdin);
+        for (i = 0; i < numCadCl; i++)
+        {
+            if (strcmp(CadClien[i].telefone, telAlt) == 0)
+            {
+                bscFeita = 1;
+                printf("Digite o Telefone Atualizado: ");
+                fflush(stdin);
+                fgets(CadClien[i].telefone, 15, stdin);
+                printf("\nTelefone Atualizado!");
+            }
+        }
+        if (bscFeita == 0)
+        {
+            printf("\n\nTelefone Invalido\n\n1 - Tente Novamente\n2 - Voltar\n0 - Sair\n\nEscolha a Opcao Desejada: ");
+            scanf("%d", &op);
+            switch (op)
+            {
+            case 1:
+                alterarDadosClien();
+                break;
+            case 0:
+                exit(0);
+                break;
+            default:
+                menuCadastroClien();
+                break;
+            }
+        }
+        break;
+    }
+    printf("\n\n1 - Continuar Alterando\n2 - Voltar\n0 - Sair\n\nEscolha a Opcao Desejada: ");
+    scanf("%d", &op);
+    switch (op)
+    {
+    case 1:
+        alterarDadosClien();
+        break;
+    case 2:
+        menuCadastroClien();
+        break;
+    case 0:
+        exit(0);
+        break;
+    }
+}
+// Excluir Dados do Cliente
+void excluirClien()
+{
+    int i, e;
+    char cpfExcl[20];
+    int excFeita = 0;
+    system("cls");
+    printf("------------------------------------------------\n");
+    printf("\tEXCLUIR CADASTRO DE CLIENTES\n");
+    printf("------------------------------------------------\n");
+    printf("\nDigite o CPF do Cliente Que Voce Deseja Apagar os Dados: ");
+    fflush(stdin);
+    fgets(cpfExcl, 20, stdin);
+
+    for (i = 0; i < numCadCl; i++)
+    {
+        if (strcmp(CadClien[i].cpf, cpfExcl) == 0)
+        {
+            excFeita = 1;
+            for (e = i; e < numCadCl; e++)
+            { // Exclui os Dados Inclusive o Vetor, Sem Usar o Memset que Apenas Zera a Memória.
+                CadClien[e] = CadClien[e + 1];
+            }
+            numCadCl--;
+            printf("\nTodos os Dados Foram Excluidos!");
+        }
+    }
+    if (excFeita == 0)
+    {
+        printf("\nCadastro Nao Encontrado!\n\nTentar Novamente?\n\n1 - Sim\n0 - Nao\n\nEscolha a Opcao Desejada: ");
+        scanf("%d", &op); // Mensagem de Erro Caso Não Ache o Cadastro
+        switch (op)
+        {
+        case 1:
+            excluirClien();
+            break;
+        default:
+            menuCadastroClien();
+            break;
+        }
+    }
+    printf("\n\n1 - Continuar Excluindo\n2 - Voltar\n0 - Sair\n\nEscolha a Opcao Desejada: ");
+    scanf("%d", &op);
+    switch (op)
+    {
+    case 1:
+        excluirClien();
+        break;
+    case 0:
+        exit(0);
+        break;
+    default:
+        menuCadastroClien();
+        break;
+    }
+}
+// Tela de Login Gerencial
+void loginGerencia()
+{
+    system("cls");
+    char loginRel[30];
+    char senhaRel[30];
+
+    strcpy(p2[0].loginRel, "hmtgerencia");
+    strcpy(p2[0].senhaRel, "123456");
+    printf("---------------------------------------------------------\n");
+    printf("\t\tTELA DE LOGIN - GERENCIAL\n");
+    printf("---------------------------------------------------------\n");
+    printf("\nLogin: ");
+    scanf("%s", loginRel);
+    printf("\nSenha: ");
+    scanf("%s", senhaRel);
+
+    if ((strcmp(loginRel, p2[0].loginRel) == 0) && (strcmp(senhaRel, p2[0].senhaRel) == 0))
+    {                  // Se Ambos Estiverem Certo Entra No Sistema
+        system("cls"); // Limpa a Tela
+    }
+    else
+    { // Mensagem de Erro (Login)
+        printf("\nUsuario e/ou senha incorretos!\nTentar Novamente?\n\n1 - Sim\n0 - Nao\n\nEscolha a Opcao Desejada: ");
+        scanf("%d", &op);
+        switch (op)
+        {
+        case 1:
+            system("cls");
+            loginGerencia();
+            break;
+        case 0:
+            exit(0);
+            break;
+        default:
+            // Mensagem de Erro se Escolher Opcão Inválida (Login)
+            printf("Opcao Invalida\nTente Novamente: ");
+            scanf("%d", &op);
+            if (op == 1)
+            {
+                system("cls");
+                loginGerencia();
+            }
+            else
+            {
+                exit(0);
+            }
+            break;
+        }
+    }
+}
+// Menu Relatório de Funcionários
+void menuRelFunc()
+{
+    system("cls");
+    printf("\n1 - Imprimir Relatorio de Funcionarios\n2 - Voltar\n0 - Sair\n\nEscolha a Opcao Desejada: ");
+    scanf("%d", &op);
+    switch (op)
+    {
+    case 1:
+        imprimirRelatorioFunc();
+        break;
+    case 2:
+        menuInicial();
+        break;
+    default:
+        exit(0);
+        break;
+    }
+}
+// Imprimir Relatorio de Funcionarios
+void imprimirRelatorioFunc()
+{
+    struct tm tempo;
+    time_t tempoSeg;
+    time(&tempoSeg);
+    tempo = *localtime(&tempoSeg);
+    data Data;
+    Data.dia = tempo.tm_mday;
+    Data.mes = tempo.tm_mon + 1;     // Começa Contar do 0, Entao Acrescenta 1
+    Data.ano = tempo.tm_year + 1900; // O Ano em C Começa em 1900
+
+    int i;
+    float folhaSal = 0;
+    for (i = 0; i < numCad; i++)
+    {
+        folhaSal = folhaSal + Cad[i].salario; // Soma dos Salarios
+    }
+
+    FILE *file; // Cria Variável file Para o Arquivo
+
+    // Cria o Arquivo Com Tipo de Abertura "a", Se o Arquivo Tiver Já Estiver Criado Mantém os Dados e Adiciona Outros
+    file = fopen("relatorio_funcionarios.txt", "a");
+
+    // Testando se o Arquivo Foi Criado
+    if (file == NULL)
+    {
+        printf("\nErro na Abertura do Arquivo!");
+        return 1;
+    }
+    else
+    {
+        // Usando fprintf Para Armazenar os Dados No Arquivo
+        fprintf(file, "\n____________________________________________________________________________\n\n");
+        fprintf(file, "\tRELATORIO DE FUNCIONARIOS / DATA: %02d/%02d/%d\n", Data.dia, Data.mes, Data.ano);
+        fprintf(file, "____________________________________________________________________________\n\n");
+
+        for (int i = 0; i < numCad; i++)
+        {
+            fprintf(file, "Nome.............: %s", Cad[i].nome);
+            fprintf(file, "\nEndereco........: %s", Cad[i].endereco);
+            fprintf(file, "\nCPF...............: %s", Cad[i].cpf);
+            fprintf(file, "\nTelefone.........: %s", Cad[i].telefone);
+            fprintf(file, "\nCodigo...........: %s", Cad[i].codFunc);
+            fprintf(file, "\nDepartamento: %s", Cad[i].departam);
+            fprintf(file, "\nCargo.............: %s", Cad[i].cargo);
+            fprintf(file, "\nSalario............: R$%.2f", Cad[i].salario);
+            fprintf(file, "\n____________________________________________________________________________\n\n");
+        }
+        fprintf(file, "Folha Salarial: R$%.2f", folhaSal);
+        // Usando fclose para fechar o Arquivo
+        fclose(file);
+
+        printf("\nDados Gravados Com Sucesso!\n\n");
+    }
+    system("pause");
+    return 0;
+    return 0;
+}
+// Menu Relatorio de Fornecedores
+void menuRelForn()
+{
+    system("cls");
+    printf("\n1 - Imprimir Relatorio de Fornecedores\n2 - Voltar\n0 - Sair\n\nEscolha a Opcao Desejada: ");
+    scanf("%d", &op);
+    switch (op)
+    {
+    case 1:
+        imprimirRelatorioForn();
+        break;
+    case 2:
+        menuInicial();
+        break;
+    default:
+        exit(0);
+        break;
+    }
+}
+
+// Imprimir Relatorio de Fornecedores
+void imprimirRelatorioForn()
+{
+    struct tm tempo;
+    time_t tempoSeg;
+    time(&tempoSeg);
+    tempo = *localtime(&tempoSeg);
+    data Data;
+    Data.dia = tempo.tm_mday;
+    Data.mes = tempo.tm_mon + 1;     // Começa Contar do 0, Entao Acrescenta 1
+    Data.ano = tempo.tm_year + 1900; // O Ano em C Começa em 1900 '-'
+    FILE *file;                      // Cria Variável file Para o Arquivo
+
+    // Cria o Arquivo Com Tipo de Abertura "a", Se o Arquivo Tiver Já Estiver Criado Mantém os Dados e Adiciona Outros
+    file = fopen("relatorio_fornecedores.txt", "a");
+
+    // Testando se o Arquivo Foi Criado
+    if (file == NULL)
+    {
+        printf("\nErro na Abertura do Arquivo!");
+        return 1;
+    }
+    else
+    {
+        // Usando fprintf Para Armazenar a String No Arquivo
+        fprintf(file, "____________________________________________________________________________\n\n");
+        fprintf(file, "\t\tRELATORIO DE FORNECEDORES\n");
+        fprintf(file, "____________________________________________________________________________\n\n");
+
+        for (int i = 0; i < numCadFr; i++)
+        {
+            fprintf(file, "Nome/Empresa...: %s", CadForn[i].nome);
+            fprintf(file, "\nCNPJ.................: %s", CadForn[i].cnpj);
+            fprintf(file, "\nProduto..............: %s", CadForn[i].produto);
+            fprintf(file, "\nCod. do Produto: %s", CadForn[i].codigoP);
+            fprintf(file, "\nQuantidade........: %d", CadForn[i].qtd);
+            fprintf(file, "\n\nData...................: %02d/%02d/%d\n", Data.dia, Data.mes, Data.ano);
+            fprintf(file, "\n____________________________________________________________________________\n\n");
+        }
+        // Usando fclose para fechar o Arquivo
+        fclose(file);
+
+        printf("\nDados Gravados Com Sucesso!\n\n");
+    }
+    system("pause");
+    return 0;
+}
+
+// Menu Relatório de Clientes
+void menuRelClien()
+{
+    system("cls");
+    printf("\n1 - Imprimir Relatorio de Clientes\n2 - Voltar\n0 - Sair\n\nEscolha a Opcao Desejada: ");
+    scanf("%d", &op);
+    switch (op)
+    {
+    case 1:
+        imprimirRelatorioClien();
+        break;
+    case 2:
+        menuInicial();
+        break;
+    default:
+        exit(0);
+        break;
+    }
+}
+
+// Imprimir Relatorio de Clientes
+void imprimirRelatorioClien()
+{
+    FILE *file;
+    // Cria o Arquivo Com Tipo de Abertura "a", Se o Arquivo Tiver Já Estiver Criado Mantém os Dados e Adiciona Outros
+    file = fopen("relatorio_clientes.txt", "a");
+
+    // Testando se o Arquivo Foi Criado
+    if (file == NULL)
+    {
+        printf("\nErro na Abertura do Arquivo!");
+        return 1;
+    }
+    else
+    {
+        // Usando fprintf Para Armazenar a String No Arquivo
+        fprintf(file, "____________________________________________________________________________\n\n");
+        fprintf(file, "\t\tRELATORIO DE CLIENTES\n");
+        fprintf(file, "____________________________________________________________________________\n\n");
+
+        for (int i = 0; i < numCadCl; i++)
+        {
+            fprintf(file, "Nome......: %s", CadClien[i].nome);
+            fprintf(file, "\nEndereco: %s", CadClien[i].endereco);
+            fprintf(file, "\nCPF........: %s", CadClien[i].cpf);
+            fprintf(file, "\nTelefone..: %s\n", CadClien[i].telefone);
+            fprintf(file, "____________________________________________________________________________\n\n");
+        }
+        // Usando fclose para fechar o Arquivo
+        fclose(file);
+
+        printf("\nDados Gravados Com Sucesso!\n\n");
+    }
+    system("pause");
+    return 0;
+}
+// Menu Relatório de Vendas
+void menuRelVendas()
+{
+    system("cls");
+    printf("\n1 - Exibir Vendas\n2 - Imprimir Relatorio de Vendas\n3 - Voltar\n0 - Sair\n\nEscolha a Opcao Desejada: ");
+    scanf("%d", &op);
+    switch (op)
+    {
+    case 1:
+        exibirVendas();
+        break;
+    case 2:
+        imprimirRelatorioVendas();
+        break;
+    case 3:
+        menuInicial();
+        break;
+    default:
+        exit(0);
+        break;
+    }
+}
+// Como Não Temos Como Passar os Produtos no Código de Barras Vamos Simular a Compra do Cliente
+void passarCompras()
+{
+    do
+    {
+        system("cls");
+        printf("------------------------------------------------\n");
+        printf("\t\tPASSE AS COMPRAS\n");
+        printf("------------------------------------------------");
+        printf("\n\nProduto.........: ");
+        fflush(stdin);
+        fgets(Vendas[numVend].produto, 50, stdin);
+        printf("\nCod. Produto....: ");
+        fflush(stdin);
+        fgets(Vendas[numVend].codigoP, 20, stdin);
+        printf("\nValor Do Produto: ");
+        scanf("%f", &Vendas[numVend].valorPrd);
+        numVend++;
+        printf("\n1 - Adicionar Outro Produto\n2 - Encerrar Compra\n3 - Voltar\n0 - Cancelar Compra\n\nEscolha a Opcao Desejada: ");
+        scanf("%d", &op);
+        switch (op)
+        {
+        case 2:
+            processarPag();
+            break;
+        case 3:
+            menu();
+            break;
+        case 0:
+            exit(0);
+            break;
+        }
+    } while (op == 1);
+}
+// Processar Pagamento de Produtos
+void processarPag()
+{
+    int i;
+    float valTotal = 0;
+    for (i = 0; i < numVend; i++)
+    {
+        valTotal = valTotal + Vendas[i].valorPrd; // Soma dos Valores dos Produtos
+    }
+    printf("\nValor Total: R$%.2f", valTotal);
+    printf("\n\nDigite Seu CPF: ");
+    fflush(stdin);
+    fgets(Vendas2[numVend2].cpfc, 20, stdin);
+    printf("\nQual a Forma de Pagamento: ");
+    fflush(stdin);
+    fgets(Vendas2[numVend2].meioPag, 20, stdin);
+    numVend2++;
+    printf("Pagamento Aprovado?\n\n1 - Sim\n2 - Nao\n\nEscolha a Opcao Desejada: ");
+    scanf("%d", &op);
+    if (op == 1)
+    {
+        system("cls");
+        printf("\nPagamento Confirmado!\n");
+        printf("Deseja Liberar o Estacionamento?\n\n1 - Sim\n2 - Nao\n\nEscolha a Opcao Desejada: ");
+        scanf("%d", &op);
+        if (op == 1)
+        {
+            printf("\nRetire o Ticket!\nObrigado, Volte Sempre!");
+        }
+        if (op == 2)
+        {
+            printf("\nObrigado, Volte Sempre!");
+        }
+    }
+    else
+    {
+        printf("\n\nPagamento Negado!\n\n1 - Tente Novamente\n0 - Cancelar Compra\n\nEscolha a Opcao Desejada: ");
+        scanf("%d", &op);
+        if (op == 1)
+        {
+            processarPag();
+        }
+        else
+        {
+            exit(0);
+        }
+    }
+    printf("\n\n1 - Voltar\n0 - Sair\n\nEscolha a Opcao Desejada: ");
+    scanf("%d", &op);
+    if (op == 1)
+    {
+        menu();
+    }
+    else
+    {
+        exit(0);
+    }
+}
+// Exibir Todas as Vendas
+void exibirVendas()
+{
+    struct tm tempo;
+    time_t tempoSeg;
+    time(&tempoSeg);
+    tempo = *localtime(&tempoSeg);
+    data Data;
+    Data.dia = tempo.tm_mday;
+    Data.mes = tempo.tm_mon + 1;     // Começa Contar do 0, Então Acrescenta 1
+    Data.ano = tempo.tm_year + 1900; // O Ano em C Começa em 1900 '-'
+    FILE *file;                      // Cria Variável file Para o Arquivo
+
+    float valTotal = 0;
+    for (int i = 0; i < numVend; i++)
+    {
+        valTotal = valTotal + Vendas[i].valorPrd; // Soma dos Valores dos Produtos
+    }
+    system("cls");
+    printf("------------------------------------------------------\n");
+    printf("\t\tHISTORICO DE VENDAS\n");
+    printf("------------------------------------------------------\n");
+
+    for (int i = 0; i < numVend; i++)
+    {
+        printf("\nProduto..........: %s", Vendas[i].produto);
+        printf("\nCod. do Produto..: %s", Vendas[i].codigoP);
+        printf("\nValor do Produto.: %.2f", Vendas[i].valorPrd);
+        printf("\n\nData.............: %02d/%02d/%d", Data.dia, Data.mes, Data.ano);
+        for (int i = 0; i < numVend2; i++)
+        {
+            printf("\n\nCPF..............: %s", Vendas2[i].cpfc);
+            printf("\nMeio de Pagamento: %s", Vendas2[i].meioPag);
+            printf("\n------------------------------------------------\n");
+        }
+    }
+    printf("\t\tValor Total de Vendas: R$%.2f", valTotal);
+    printf("\n\n1 - Voltar\n0 - Sair\n\nEscolha a Opcao Desejada: ");
+    scanf("%d", &op);
+    switch (op)
+    {
+    case 1:
+        menuRelVendas();
+        break;
+    case 0:
+        exit(0);
+        break;
+    default:
+        printf("Opcao Invalida!\nTente Novamente: "); // Mensagem de Erro Caso Escolha Opção Errada
+        scanf("%d", &op);
+        if (op == 1)
+        {
+            menuRelVendas();
+        }
+        else
+        {
+            exit(0);
+        }
+        break;
+    }
+}
+// Imprimir Relatorio de Vendas
+void imprimirRelatorioVendas()
+{
+    float valTotal = 0;
+    for (int i = 0; i < numVend; i++)
+    {
+        valTotal = valTotal + Vendas[i].valorPrd; // Soma dos Valores dos Produtos
+    }
+
+    struct tm tempo;
+    time_t tempoSeg;
+    time(&tempoSeg);
+    tempo = *localtime(&tempoSeg);
+    data Data;
+    Data.dia = tempo.tm_mday;
+    Data.mes = tempo.tm_mon + 1;     // Começa Contar do 0, Entao Acrescenta 1
+    Data.ano = tempo.tm_year + 1900; // O Ano em C Começa em 1900 '-'
+    FILE *file;                      // Cria Variável file Para o Arquivo
+
+    // Cria o Arquivo Com Tipo de Abertura "a", Se o Arquivo Tiver Já Estiver Criado Mantém os Dados e Adiciona Outros
+    file = fopen("relatorio_vendas.txt", "a");
+
+    // Testando se o Arquivo Foi Criado
+    if (file == NULL)
+    {
+        printf("\nErro na Abertura do Arquivo!");
+        return 1;
+    }
+    else
+    {
+        // Usando fprintf Para Armazenar a String No Arquivo
+        fprintf(file, "____________________________________________________________________________\n\n");
+        fprintf(file, "\t\tRELATORIO DE VENDAS\n");
+        fprintf(file, "____________________________________________________________________________\n\n");
+
+        for (int i = 0; i < numVend; i++)
+        {
+            fprintf(file, "Produto..............: %s", Vendas[i].produto);
+            fprintf(file, "\nCod. do Produto: %s", Vendas[i].codigoP);
+            fprintf(file, "\nValor do Produto: R$%.2f\n", Vendas[i].valorPrd);
+            fprintf(file, "\nData....................: %02d/%02d/%d\n", Data.dia, Data.mes, Data.ano);
+            fprintf(file, "\n____________________________________________________________________________\n\n");
+        }
+        for (int i = 0; i < numVend2; i++)
+        {
+            fprintf(file, "\nCPF: %s", Vendas2[i].cpfc);
+            fprintf(file, "\nMeio de Pagamento: %s", Vendas2[i].meioPag);
+            fprintf(file, "\n____________________________________________________________________________\n");
+        }
+        fprintf(file, "\t\t\t\t\tValor Total de Vendas: R$%.2f\n\n", valTotal);
+        // Usando fclose para fechar o Arquivo
+        fclose(file);
+
+        printf("\nDados Gravados Com Sucesso!\n\n");
+    }
+    system("pause");
+    return 0;
+}
